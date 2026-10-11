@@ -1,0 +1,19 @@
+# Generated archives. Build them with `npm run package:openai`.
+dist/
+*.zip
+
+node_modules/
+
+# Never commit credentials or reviewer logins. Reviewer access goes in the
+# OpenAI and Claude portals only.
+.env
+.env.*
+*.pem
+*.key
+
+# OS and editor files
+.DS_Store
+__MACOSX/
+.idea/
+.vscode/
+*.swp

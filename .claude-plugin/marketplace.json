@@ -1,0 +1,14 @@
+{
+  "name": "joulo",
+  "owner": {
+    "name": "Joulo B.V."
+  },
+  "description": "Joulo's plugin for Claude Code: read-only access to your Joulo EV charging data through the Joulo MCP server.",
+  "plugins": [
+    {
+      "name": "joulo",
+      "source": "./plugins/joulo",
+      "description": "Read personal EV charging data and ERE carbon credit earnings from Joulo."
+    }
+  ]
+}

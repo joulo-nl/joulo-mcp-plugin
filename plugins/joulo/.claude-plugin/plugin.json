@@ -1,0 +1,17 @@
+{
+  "name": "joulo",
+  "displayName": "Joulo",
+  "version": "0.1.0",
+  "description": "Read personal EV charging data and ERE carbon credit earnings from Joulo.",
+  "author": {
+    "name": "Joulo B.V."
+  },
+  "license": "MIT",
+  "repository": "https://github.com/joulo-nl/joulo-mcp-plugin",
+  "homepage": "https://joulo.nl/",
+  "icon": "./assets/joulo-icon.png",
+  "documentationUrl": "https://developer.joulo.nl/guides/mcp",
+  "supportUrl": "https://joulo.nl/support",
+  "privacyPolicyUrl": "https://joulo.nl/privacy",
+  "termsOfServiceUrl": "https://joulo.nl/voorwaarden"
+}

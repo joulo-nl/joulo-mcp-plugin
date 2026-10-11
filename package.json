@@ -1,0 +1,20 @@
+{
+  "name": "joulo-mcp-plugin",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Source of the Joulo plugin for OpenAI (ChatGPT, Codex) and Claude Code.",
+  "license": "MIT",
+  "repository": "github:joulo-nl/joulo-mcp-plugin",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check": "node scripts/check.mjs",
+    "package:openai": "node scripts/package-openai.mjs",
+    "test": "node scripts/check.mjs && node scripts/package-openai.mjs"
+  },
+  "devDependencies": {
+    "ajv": "8.17.1"
+  }
+}

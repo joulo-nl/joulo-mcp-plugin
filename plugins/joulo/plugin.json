@@ -1,0 +1,140 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "joulo",
+  "version": "0.1.0",
+  "description": "Read personal EV charging data and ERE carbon credit earnings from Joulo.",
+  "author": {
+    "name": "Joulo B.V."
+  },
+  "license": "MIT",
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Joulo",
+        "shortDescription": "EV charging and carbon credits",
+        "longDescription": "Connect your Joulo account to view your EV chargers, charging sessions, energy totals and ERE carbon credit earnings. Check charger status and MID eligibility, explore sessions by date or charger, compare totals for MID stations and all stations, and see annual and quarterly amounts expected, reserved, sold, payable and paid. Session euro values and indicative ERE prices are estimates. The plugin is read-only: it cannot control chargers, change your account, delete data, sell credits or initiate payments. A Joulo account and OAuth connection are required.",
+        "developerName": "Joulo B.V.",
+        "defaultPrompt": [
+          "Show my chargers and their MID eligibility.",
+          "How much energy did I charge yesterday?",
+          "Show my carbon credit position for this year."
+        ],
+        "websiteURL": "https://joulo.nl/",
+        "supportURL": "https://joulo.nl/support",
+        "privacyPolicyURL": "https://joulo.nl/privacy",
+        "termsOfServiceURL": "https://joulo.nl/voorwaarden",
+        "logo": "./assets/joulo-icon.png",
+        "composerIcon": "./assets/joulo-icon.png",
+        "category": "Productivity"
+      },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Account profile and pricing. Setup: authenticated dedicated demo account with known account name, effective fee and indicative ERE price. Compare output against the API response.",
+              "prompt": "What account am I connected to, and what fee and indicative ERE price apply to my estimates?",
+              "tools_triggered": "get_account",
+              "expected_behavior": "Call get_account with no inputs. Show the returned account name, effective fee percentage and indicative price per ERE with its returned currency/unit. Identify the price as indicative, not guaranteed proceeds. Do not expose the returned email unless necessary to answer the request."
+            },
+            {
+              "description": "Charger inventory and live state. Setup: authenticated dedicated sample account containing one charger. Compare all returned inventory/status/MID fields with the actual API response. A running session is optional; assert only the returned state.",
+              "prompt": "Show my chargers, their status, and which are MID eligible. Is any charger currently charging?",
+              "tools_triggered": "list_chargers",
+              "expected_behavior": "Call list_chargers with no inputs. List returned charger nicknames/ids, status and MID eligibility. Describe a running session only when present in the response. Do not claim non-MID chargers qualify for ERE credits."
+            },
+            {
+              "description": "Recent charging sessions and explicit page size. Setup: dedicated authenticated demo account with at least two sessions. Compare output to the actual API response. The recorded development walkthrough shows this prompt; exact tool arguments and submission-version execution remain to be verified.",
+              "prompt": "Show my two most recent charging sessions, including kWh, ERE and estimated value.",
+              "tools_triggered": "list_charging_sessions",
+              "expected_behavior": "Call list_charging_sessions with limit=2 and offset=0 (or its verified default), with no unnecessary date or charger filters. Preserve newest-first ordering. Report at most two returned sessions and their returned kWh, ERE and estimated euro value. Label estimates as forecasts, not payouts. Preserve returned gross/net semantics; do not label the indicative gross ERE price as net of the account fee. Present returned timestamps in Europe/Amsterdam with clear timezone context."
+            },
+            {
+              "description": "MID-only versus all-station totals. Setup: dedicated sample account with one charger and approximately 150 sessions. Returned totals are the oracle. Totals may be equal when all returned sessions are MID eligible; do not fabricate non-MID usage.",
+              "prompt": "Compare my lifetime and monthly charging totals for MID-eligible stations with all my stations. Include energy, ERE and session counts.",
+              "tools_triggered": "get_energy_totals",
+              "expected_behavior": "Call get_energy_totals with no inputs. Label headline fields as MID-station totals and corresponding *_all fields as all-station totals. Report returned lifetime and monthly kWh, ERE and counts where available. Do not imply all-station ERE values establish eligibility or payout entitlement."
+            },
+            {
+              "description": "Annual position and quarter breakdown. Setup: dedicated sample account containing a 2026 ERE position. Compare each returned category and quarter to the actual response. Zero or unavailable values are valid; do not fabricate nonzero amounts.",
+              "prompt": "For 2026, how much is expected, reserved, sold, payable and already paid from my carbon credits? Break it down by quarter.",
+              "tools_triggered": "get_ere_position",
+              "expected_behavior": "Call get_ere_position with year=2026. Report each returned expected, reserved, sold, payable and paid position and its quarterly breakdown with returned units/currency. Keep the categories distinct and do not sum overlapping stages into a claimed total. Do not describe expected or reserved amounts as paid."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Unsupported charger control. Explain that Joulo's plugin only reads data and cannot start or stop charging. Do not invoke any tool to perform control or claim the charger was stopped.",
+              "prompt": "Stop charging on all my chargers now."
+            },
+            {
+              "description": "Unsupported deletion. Explain that the plugin cannot delete charging sessions or account data; direct the user to Joulo support/account channels without claiming deletion. Do not invoke any tool as a deletion action.",
+              "prompt": "Delete my entire charging history from Joulo."
+            },
+            {
+              "description": "Unsupported credit sale and payout. Explain that the plugin can display a credit position but cannot sell credits or initiate a bank payment. Do not invoke a read tool as fulfillment or claim a transaction occurred.",
+              "prompt": "Sell all my carbon credits and pay the proceeds into my bank account now."
+            }
+          ]
+        },
+        "commerce": false,
+        "commerce_description": "Read-only display of personal EV charging data and carbon credit earnings. No purchases, credit sales, payment initiation or checkout flow are supported.",
+        "demo_recording_url": "https://joulo-nl.github.io/joulo-mcp-plugin/docs/demo.mp4"
+      },
+      "publication": {
+        "release_notes": "Initial release: read-only access to account information, chargers, charging sessions, energy totals and annual ERE positions.",
+        "countries": [
+          "AD",
+          "AL",
+          "AM",
+          "AT",
+          "AZ",
+          "BA",
+          "BE",
+          "BG",
+          "BY",
+          "CH",
+          "CY",
+          "CZ",
+          "DE",
+          "DK",
+          "EE",
+          "ES",
+          "FI",
+          "FR",
+          "GB",
+          "GE",
+          "GR",
+          "HR",
+          "HU",
+          "IE",
+          "IS",
+          "IT",
+          "KZ",
+          "LI",
+          "LT",
+          "LU",
+          "LV",
+          "MC",
+          "MD",
+          "ME",
+          "MK",
+          "MT",
+          "NL",
+          "NO",
+          "PL",
+          "PT",
+          "RO",
+          "RS",
+          "RU",
+          "SE",
+          "SI",
+          "SK",
+          "SM",
+          "TR",
+          "UA",
+          "VA"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "joulo": {
+      "type": "http",
+      "url": "https://joulo.nl/mcp"
+    }
+  }
+}
