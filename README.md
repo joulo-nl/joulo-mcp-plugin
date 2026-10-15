@@ -4,7 +4,7 @@ This repository is the source of the Joulo plugin on two platforms: OpenAI (Chat
 
 The plugin is read-only. It cannot start or stop charging, change the account, delete data, sell ERE's or start a payment.
 
-> **Status: draft.** Nothing here has been submitted for review or published on either platform.
+> **Status.** The Claude plugin has been in Anthropic's directory since 15 October 2026, with the Community label. The Claude connector for `https://joulo.nl/mcp` is not submitted yet. This file does not track the OpenAI submission.
 
 ## How it works
 
@@ -133,7 +133,7 @@ None. The endpoint is fixed and public, and each user authenticates with their o
 
 ## Submission
 
-Neither platform has received a submission from this repository. The steps below are what remains; they are not done.
+The Claude plugin went live in Anthropic's directory on 15 October 2026. The Claude connector is not submitted yet. This file does not record the OpenAI submission.
 
 ### OpenAI (ChatGPT and Codex)
 
@@ -156,13 +156,20 @@ Sources: [claude.com/docs/plugins/submit](https://claude.com/docs/plugins/submit
 3. At [claude.ai/directory/manage](https://claude.ai/directory/manage) choose Submit new › Plugin bundle. Point it at this GitHub repository, with plugin path `plugins/joulo`. A Team or Enterprise organization needs an Owner for this step.
 4. The repository may stay private during review, with the Claude GitHub App installed. It must be public before the plugin is published.
 
+Listed on 15 October 2026 with the Community label. Three things we learned from the live listing:
+
+- **Where it shows.** The directory inside claude.ai lists the plugin. The public website does not: on 15 October 2026, `claude.com/marketplace/plugins` showed none of the Community plugins we searched for, Joulo included. The search on `claude.com/marketplace/connectors-plugins` covers connectors only.
+- **Category.** Anthropic assigns the plugin's category; no field in `plugin.json` sets it. The first listing came out as `workouts-health-records`. Version 0.1.1 adds `keywords` and clearer README text to steer it. To change it directly, email `directory@anthropic.com`.
+- **Updates.** The directory follows the tracked branch, which is `main` unless the portal says otherwise. A push there starts a scan, and by default a reviewer publishes each passing version. Raise `version` in both manifests with every release.
+
 ### Claude (connectors directory)
 
-Anthropic asks for a plugin that points at an MCP server to submit that server as a connector too. Source: [claude.com/docs/connectors/building/submission](https://claude.com/docs/connectors/building/submission).
+Anthropic asks for a plugin that points at an MCP server to submit that server as a connector too. The connector listing is also the route to the public website, and its categories are ours to set in the portal. Source: [claude.com/docs/connectors/building/submission](https://claude.com/docs/connectors/building/submission).
 
-1. In the same portal, choose MCP connector and enter `https://joulo.nl/mcp`.
-2. Fill in the listing, the privacy policy and support URLs, and test credentials for a populated account.
-3. Claude.ai calls back on `https://claude.ai/api/mcp/auth_callback`. The Joulo OAuth server accepts that host.
+1. Submit from the same claude.ai organization as the plugin, so the portal can pair the two.
+2. In the portal, choose MCP connector and enter `https://joulo.nl/mcp`.
+3. Fill in the listing, the privacy policy and support URLs, and test credentials for a populated account. Pick energy and EV categories, and answer no to personal health data under Data handling.
+4. Claude.ai calls back on `https://claude.ai/api/mcp/auth_callback`. The Joulo OAuth server accepts that host.
 
 ## Demo
 

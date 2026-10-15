@@ -1,7 +1,7 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "joulo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Read personal EV charging data and ERE carbon credit earnings from Joulo.",
   "author": {
     "name": "Joulo B.V."
@@ -81,7 +81,7 @@
         "demo_recording_url": "https://joulo-nl.github.io/joulo-mcp-plugin/docs/demo.mp4"
       },
       "publication": {
-        "release_notes": "Initial release: read-only access to account information, chargers, charging sessions, energy totals and annual ERE positions.",
+        "release_notes": "Clearer listing text and discovery keywords for the Claude directory. The tools and permissions are the same as in 0.1.0.",
         "countries": [
           "AD",
           "AL",
