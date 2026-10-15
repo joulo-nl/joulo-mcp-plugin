@@ -1,8 +1,8 @@
 {
   "name": "joulo",
   "displayName": "Joulo",
-  "version": "0.1.1",
-  "description": "Read personal EV charging data and ERE carbon credit earnings from Joulo.",
+  "version": "0.1.2",
+  "description": "Read your home EV charging sessions, energy totals, electricity prices and ERE earnings from Joulo.",
   "author": {
     "name": "Joulo B.V."
   },

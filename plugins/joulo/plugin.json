@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "joulo",
-  "version": "0.1.1",
-  "description": "Read personal EV charging data and ERE carbon credit earnings from Joulo.",
+  "version": "0.1.2",
+  "description": "Read your home EV charging sessions, energy totals, electricity prices and ERE earnings from Joulo.",
   "author": {
     "name": "Joulo B.V."
   },
@@ -81,7 +81,7 @@
         "demo_recording_url": "https://joulo-nl.github.io/joulo-mcp-plugin/docs/demo.mp4"
       },
       "publication": {
-        "release_notes": "Clearer listing text and discovery keywords for the Claude directory.",
+        "release_notes": "Clearer short description, plus listing text and keywords for the Claude directory.",
         "countries": [
           "AD",
           "AL",

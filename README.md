@@ -186,7 +186,8 @@ Sources: [claude.com/docs/plugins/submit](https://claude.com/docs/plugins/submit
 Listed on 15 October 2026 with the Community label. Three things we learned from the live listing:
 
 - **Where it shows.** The directory inside claude.ai lists the plugin. The public website does not: on 15 October 2026, `claude.com/marketplace/plugins` showed none of the Community plugins we searched for, Joulo included. The search on `claude.com/marketplace/connectors-plugins` covers connectors only.
-- **Category.** Anthropic assigns the plugin's category; no field in `plugin.json` sets it. The first listing came out as `workouts-health-records`. Version 0.1.1 adds `keywords` and clearer README text to steer it. To change it directly, email `directory@anthropic.com`.
+- **Category.** Anthropic assigns the plugin's category; no field in `plugin.json` sets it. The first listing came out as `workouts-health-records`. To change it directly, email `directory@anthropic.com`.
+- **Listing details.** The portal's Listing tab keeps the details from when the submission was created. Only the display name and the short description (`description`) follow the live version. Version 0.1.1 added `keywords`, and the tab still shows them as "No value". Version 0.1.2 rewords `description`, because that text does reach the live listing.
 - **Updates.** The directory follows the tracked branch, which is `main` unless the portal says otherwise. A push there starts a scan, and by default a reviewer publishes each passing version. Raise `version` in both manifests with every release.
 
 ### Claude (connectors directory)
