@@ -1,6 +1,6 @@
 # Joulo plugin for ChatGPT, Codex and Claude
 
-This repository is the source of the Joulo plugin on two platforms: OpenAI (ChatGPT and Codex) and Anthropic (Claude Code). The plugin connects an AI assistant to a user's own Joulo account. With it, the assistant can read the user's EV charging stations, charging sessions, energy totals and ERE (Emissiereductie-eenheden) position.
+This repository is the source of the Joulo plugin on two platforms: OpenAI (ChatGPT and Codex) and Anthropic (Claude Code). The plugin connects an AI assistant to a user's own Joulo account. With it, the assistant can read the user's EV charging stations, charging sessions, energy totals, ERE (Emissiereductie-eenheden) position, electricity prices and charging costs. It can also read Joulo's own guides and kennisbank.
 
 The plugin is read-only. It cannot start or stop charging, change the account, delete data, sell ERE's or start a payment.
 
@@ -19,17 +19,44 @@ The plugin holds no code of its own. It points the assistant at one remote MCP s
 
 Each user signs in with their own Joulo account and grants read scopes. The repository and the packages hold no tokens, client secrets or reviewer logins.
 
-The server exposes five tools. Each one wraps an existing read-only route of the Joulo API and carries `readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: true` and `openWorldHint: false`.
+### Tools
+
+On 15 October 2026 the server (version 1.3.0) exposes fifteen tools. Each one wraps an existing read-only route of the Joulo API. Each carries a `title`, `readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: true` and `openWorldHint: false`.
 
 | Tool | Scope | What it returns |
 |---|---|---|
-| `get_account` | `profile:read` | Account name, effective fee, indicative ERE price |
-| `list_chargers` | `chargers:read` | Charging stations, status, MID eligibility |
+| `get_account` | `profile:read` | Account name, effective fee, indicative ERE price, referral code |
+| `list_chargers` | `chargers:read` | Charging stations, status, MID eligibility, live charging state |
 | `list_charging_sessions` | `sessions:read` | Sessions, filtered by period or station, paged |
 | `get_energy_totals` | `energy:read` | Lifetime and monthly kWh, ERE and session counts |
 | `get_ere_position` | `position:read` | Expected, reserved, sold, payable and paid ERE per year and quarter |
+| `get_registration_status` | `position:read` | Registration steps: done and still open |
+| `get_price_curve` | `profile:read` | Electricity price per hour or quarter-hour for one day, with the price widget |
+| `find_cheapest_window` | `profile:read` | The cheapest time to charge a number of kWh before a deadline |
+| `get_charging_costs` | `profile:read` | Charging costs over a period, per session at the EPEX price of that moment |
+| `get_household` | `profile:read` | Energy contract and household details |
+| `list_locations` | `locations:read` | Charging addresses: postcode, city and country, never the street |
+| `get_ere_market` | none | Indicative ERE price and Joulo's past ERE sales |
+| `read_kennisbank_article` | none | One article from Joulo's public kennisbank |
+| `get_connection_guide` | none | How to connect a charging station of one brand |
+| `get_feature_guide` | none | How a feature of the Joulo dashboard or app works |
 
-The tool list and annotations come from the server source (`supabase/functions/api/mcp.ts` in the Joulo monorepo). The server owns them, so a change there does not need a change here.
+A tool with scope "none" serves public reference data, so every signed-in caller may call it. `locations:read` came after the first connections. A token without it still sees `list_locations`. A call then answers 403 `insufficient_scope`, and the client asks the user for that scope.
+
+### Resources
+
+One tool renders a widget: `get_price_curve` names it in its `_meta`. The server lists the same HTML twice, once per host convention:
+
+| URI | MIME type | Host |
+|---|---|---|
+| `ui://joulo/price-curve.html` | `text/html;profile=mcp-app` | MCP Apps |
+| `ui://joulo/price-curve.skybridge.html` | `text/html+skybridge` | ChatGPT (OpenAI Apps SDK) |
+
+The widget makes no network requests: its CSP allows no domains, and the data arrives with the tool result. A client without UI support shows the text result, which is complete on its own. The server has no resource templates.
+
+### Source
+
+The tools, the resources and the server instructions come from the server source (`supabase/functions/api/mcp.ts` in the Joulo monorepo). The server owns them, so a change there does not need a change here. Update the tables above when they drift.
 
 ## Repository layout
 
