@@ -81,7 +81,7 @@
         "demo_recording_url": "https://joulo-nl.github.io/joulo-mcp-plugin/docs/demo.mp4"
       },
       "publication": {
-        "release_notes": "Clearer listing text and discovery keywords for the Claude directory. The tools and permissions are the same as in 0.1.0.",
+        "release_notes": "Clearer listing text and discovery keywords for the Claude directory.",
         "countries": [
           "AD",
           "AL",

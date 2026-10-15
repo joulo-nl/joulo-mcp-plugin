@@ -18,7 +18,7 @@ Claude Code does not read the Agent Plugins format. Its docs and `claude plugin 
 
 - **MCP server.** Both point at `https://joulo.nl/mcp`. There is one server and one deployment.
 - **Authentication.** Both use OAuth 2.1 with dynamic client registration against `https://joulo.nl`. Each client registers itself. The Joulo consent page recognizes ChatGPT and Claude by their redirect URI.
-- **Tools.** The same five read-only tools, with the same annotations and the same server instructions. The server sends them, so neither manifest lists them.
+- **Tools.** The same read-only tools (fifteen on 15 October 2026), with the same annotations and the same server instructions. The server sends them, so neither manifest lists them. The README lists them.
 - **Identity.** Name `joulo`, version, description, author `Joulo B.V.`, website, support, privacy and terms URLs, and the icon. `npm run check` fails when the two manifests disagree on any of these.
 
 ## Adapted
@@ -28,6 +28,7 @@ Claude Code does not read the Agent Plugins format. Its docs and `claude plugin 
 | Transport name | `"type": "streamable-http"` | `"type": "http"` | Same transport. Agent Plugins does not allow `http`; Claude Code documents `http` and lists `streamable-http` as an alias. The directory checklist names only `http`, `sse` and `ws`. |
 | OAuth callback | `chatgpt.com` | Claude Code: `http://localhost:<port>/callback`. Claude.ai: `https://claude.ai/api/mcp/auth_callback` | The Joulo server accepts all three. |
 | Listing URLs | `websiteURL`, `supportURL`, `privacyPolicyURL`, `termsOfServiceURL` | `homepage`, `supportUrl`, `privacyPolicyUrl`, `termsOfServiceUrl` | Different field names, same values. |
+| Price widget | `ui://joulo/price-curve.skybridge.html`, `text/html+skybridge` | `ui://joulo/price-curve.html`, `text/html;profile=mcp-app` | Same HTML. Each host reads its own convention from the tool's `_meta`. A client without UI support shows the text result. |
 | Documentation URL | Not in the manifest | `documentationUrl`: `https://developer.joulo.nl/guides/mcp` | The server already names this URL as `resource_documentation` in its OAuth metadata. |
 | Distribution | ZIP upload in the OpenAI portal | Git marketplace (`.claude-plugin/marketplace.json`) and the Claude directory, which reads GitHub | |
 
