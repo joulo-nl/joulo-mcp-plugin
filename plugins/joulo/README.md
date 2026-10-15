@@ -1,11 +1,12 @@
 # Joulo
 
-Joulo connects your AI assistant to your own Joulo account. Ask about your EV charging stations, your charging sessions, your energy totals and your ERE (Emissiereductie-eenheden) position, and the assistant answers from your own data.
+Joulo is a Dutch service that pays electric car drivers for the electricity they charge at home, through ERE (Emissiereductie-eenheden). This plugin connects your AI assistant to your own Joulo account. Ask about your charging stations, your charging sessions, your energy totals, electricity prices and your ERE position, and the assistant answers from your own data.
 
 ## What you can ask
 
 - Which of my charging stations are MID-eligible, and is one charging now?
 - How much energy did I charge yesterday?
+- When is electricity cheapest tonight to charge my car?
 - Compare my totals for MID stations with all my stations.
 - For 2026, how much is expected, reserved, sold, payable and paid?
 
