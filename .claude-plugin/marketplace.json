@@ -8,7 +8,7 @@
     {
       "name": "joulo",
       "source": "./plugins/joulo",
-      "description": "Read personal EV charging data and ERE carbon credit earnings from Joulo."
+      "description": "Read your home EV charging sessions, energy totals, electricity prices and ERE earnings from Joulo."
     }
   ]
 }
