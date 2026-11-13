@@ -21,7 +21,7 @@ Each user signs in with their own Joulo account and grants scopes: read scopes, 
 
 ### Tools
 
-On 13 November 2026 the server (version 1.5.0) exposes 29 tools. Each one wraps an existing route of the Joulo API and carries a `title`. Each tool has `destructiveHint: false`, `idempotentHint: true` and `readOnlyHint: true`, except the two alert tools marked "write" below. Three tools send the caller's input to a third party while they run, and they carry `openWorldHint: true`: `plan_route_charging` (Google Routes), `get_solar_forecast` and `get_historical_weather` (Open-Meteo). Every other tool has `openWorldHint: false`.
+On 13 November 2026 the server (version 1.5.0) exposes 30 tools. Each one wraps an existing route of the Joulo API and carries a `title`. Each tool has `destructiveHint: false`, `idempotentHint: true` and `readOnlyHint: true`, except the two alert tools marked "write" below. Three tools send the caller's input to a third party while they run, and they carry `openWorldHint: true`: `plan_route_charging` (Google Routes), `get_solar_forecast` and `get_historical_weather` (Open-Meteo). Every other tool has `openWorldHint: false`.
 
 Your own data:
 
@@ -230,7 +230,7 @@ Anthropic asks for a plugin that points at an MCP server to submit that server a
 
 ## Demo
 
-[`docs/demo.mp4`](docs/demo.mp4) is a two-minute run in Codex (1072 × 1440, re-encoded from the screen recording). We recorded it on 11 October 2026 with a demo account. It shows the fee and price question, recent sessions, MID and all-station totals, and the 2026 position per quarter. It also shows three refused requests: stop charging, delete history, sell credits. It predates version 0.2.0, so it shows none of the public charging tools. GitHub Pages serves it as a playable video at https://joulo-nl.github.io/joulo-mcp-plugin/docs/demo.mp4. The OpenAI manifest links that URL as `review.demo_recording_url`. GitHub's own file view does not play video. The video is not part of the OpenAI ZIP.
+[`docs/demo.mp4`](docs/demo.mp4) is a two-minute run in Codex (1072 × 1440, re-encoded from the screen recording). We recorded it on 11 October 2026 with a demo account. It shows the fee and price question, recent sessions, MID and all-station totals, and the 2026 position per quarter. It also shows three refused requests: stop charging, delete history, sell ERE's. It predates version 0.2.0, so it shows none of the public charging tools. GitHub Pages serves it as a playable video at https://joulo-nl.github.io/joulo-mcp-plugin/docs/demo.mp4. The OpenAI manifest links that URL as `review.demo_recording_url`. GitHub's own file view does not play video. The video is not part of the OpenAI ZIP.
 
 ## Testing status
 
