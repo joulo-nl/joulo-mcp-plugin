@@ -18,7 +18,7 @@ Claude Code does not read the Agent Plugins format. Its docs and `claude plugin 
 
 - **MCP server.** Both point at `https://joulo.nl/mcp`. There is one server and one deployment.
 - **Authentication.** Both use OAuth 2.1 with dynamic client registration against `https://joulo.nl`. Each client registers itself. The Joulo consent page recognizes ChatGPT and Claude by their redirect URI.
-- **Tools.** The same tools (29 on 13 November 2026, two of them write), with the same annotations and the same server instructions. The server sends them, so neither manifest lists them. The README lists them.
+- **Tools.** The same tools (30 on 13 November 2026, two of them write), with the same annotations and the same server instructions. The server sends them, so neither manifest lists them. The README lists them.
 - **Identity.** Name `joulo`, version, description, author `Joulo B.V.`, website, support, privacy and terms URLs, and the icon. `npm run check` fails when the two manifests disagree on any of these.
 
 ## Adapted
