@@ -1,8 +1,8 @@
 # Joulo plugin for ChatGPT, Codex and Claude
 
-This repository is the source of the Joulo plugin on two platforms: OpenAI (ChatGPT and Codex) and Anthropic (Claude Code). The plugin connects an AI assistant to a user's own Joulo account. With it, the assistant can read the user's EV charging stations, charging sessions, energy totals, ERE (Emissiereductie-eenheden) position, electricity prices and charging costs. It can also read Joulo's own guides and kennisbank.
+This repository is the source of the Joulo plugin on two platforms: OpenAI (ChatGPT and Codex) and Anthropic (Claude Code). The plugin connects an AI assistant to a user's own Joulo account. With it, the assistant can read the user's EV charging stations, charging sessions, energy totals, ERE (Emissiereductie-eenheden) position, electricity prices and charging costs. It can also find public chargers in the Netherlands, read public energy and weather data, and read Joulo's own guides, kennisbank and blog.
 
-The plugin is read-only. It cannot start or stop charging, change the account, delete data, sell ERE's or start a payment.
+The plugin changes one thing: it can turn a mail alert for a public charging location on and off. Every other tool reads. It cannot start or stop charging, change the account, delete data, sell ERE's or start a payment.
 
 > **Status.** The Claude plugin has been in Anthropic's directory since 15 October 2026, with the Community label. The Claude connector for `https://joulo.nl/mcp` is not submitted yet. This file does not track the OpenAI submission.
 
@@ -17,11 +17,13 @@ The plugin holds no code of its own. It points the assistant at one remote MCP s
 | Discovery | `https://joulo.nl/.well-known/oauth-protected-resource/mcp` |
 | Developer docs | https://developer.joulo.nl/guides/mcp |
 
-Each user signs in with their own Joulo account and grants read scopes. The repository and the packages hold no tokens, client secrets or reviewer logins.
+Each user signs in with their own Joulo account and grants scopes: read scopes, plus `alerts:write` for the mail alerts. The repository and the packages hold no tokens, client secrets or reviewer logins.
 
 ### Tools
 
-On 15 October 2026 the server (version 1.3.0) exposes fifteen tools. Each one wraps an existing read-only route of the Joulo API. Each carries a `title`, `readOnlyHint: true`, `destructiveHint: false`, `idempotentHint: true` and `openWorldHint: false`.
+On 13 November 2026 the server (version 1.5.0) exposes 29 tools. Each one wraps an existing route of the Joulo API and carries a `title`. Each tool has `destructiveHint: false`, `idempotentHint: true` and `readOnlyHint: true`, except the two alert tools marked "write" below. Three tools send the caller's input to a third party while they run, and they carry `openWorldHint: true`: `plan_route_charging` (Google Routes), `get_solar_forecast` and `get_historical_weather` (Open-Meteo). Every other tool has `openWorldHint: false`.
+
+Your own data:
 
 | Tool | Scope | What it returns |
 |---|---|---|
@@ -29,30 +31,57 @@ On 15 October 2026 the server (version 1.3.0) exposes fifteen tools. Each one wr
 | `list_chargers` | `chargers:read` | Charging stations, status, MID eligibility, live charging state |
 | `list_charging_sessions` | `sessions:read` | Sessions, filtered by period or station, paged |
 | `get_energy_totals` | `energy:read` | Lifetime and monthly kWh, ERE and session counts |
-| `get_ere_position` | `position:read` | Expected, reserved, sold, payable and paid ERE per year and quarter |
+| `make_chart` | `energy:read` | A chart spec and its points: kWh, ERE, euro, sessions or price over time |
+| `get_ere_position` | `position:read` | Expected, reserved, traded, payable and paid ERE per year and quarter |
 | `get_registration_status` | `position:read` | Registration steps: done and still open |
 | `get_price_curve` | `profile:read` | Electricity price per hour or quarter-hour for one day, with the price widget |
-| `find_cheapest_window` | `profile:read` | The cheapest time to charge a number of kWh before a deadline |
-| `get_charging_costs` | `profile:read` | Charging costs over a period, per session at the EPEX price of that moment |
+| `find_cheapest_window` | `profile:read` | The cheapest time to charge a number of kWh before a deadline, also on own solar |
+| `get_charging_costs` | `profile:read` | Charging costs over a period at the EPEX price of each session, and the cost per kilometre |
 | `get_household` | `profile:read` | Energy contract and household details |
+| `compare_with_customers` | `profile:read` | How the user's home use compares with Joulo's other private customers |
 | `list_locations` | `locations:read` | Charging addresses: postcode, city and country, never the street |
+
+Public charging:
+
+| Tool | Scope | What it returns |
+|---|---|---|
+| `find_public_chargers` | none | Public charging locations near a place, with free laadpunten, a reference price and parking, with the charger map widget |
+| `price_public_charging_session` | none | What one session at one location costs, for a given kWh, stay and start time |
+| `plan_route_charging` | none | Fast chargers along the route between two places, cheapest first |
+| `get_public_charging_prices` | none | Median, p10 and p90 public charging price per kWh in the Netherlands, for AC and DC |
+| `list_public_charger_alerts` | `alerts:write` | The user's saved locations and running mail alerts, with the status of this minute |
+| `watch_public_charger` | `alerts:write`, write | Turns on one mail when a laadpunt at a location comes free |
+| `stop_public_charger_alert` | `alerts:write`, write | Stops the alerts on one location |
+
+Reference data and guides:
+
+| Tool | Scope | What it returns |
+|---|---|---|
 | `get_ere_market` | none | Indicative ERE price and Joulo's past ERE sales |
+| `get_electricity_price_history` | none | EPEX day-ahead prices since 2015 |
+| `get_electricity_price_forecast` | none | EPEX prices for today and up to 6 more days, with Joulo's forecast after the published hours |
+| `get_solar_forecast` | none | Solar yield forecast for a place, per hour and per day |
+| `get_historical_weather` | none | Measured weather at a place since 2000 |
+| `get_grid_operator_costs` | none | Fixed grid operator costs per operator and connection: the maximum tariffs the ACM sets |
 | `read_kennisbank_article` | none | One article from Joulo's public kennisbank |
+| `read_blog` | none | Posts from the Joulo blog |
 | `get_connection_guide` | none | How to connect a charging station of one brand |
 | `get_feature_guide` | none | How a feature of the Joulo dashboard or app works |
 
-A tool with scope "none" serves public reference data, so every signed-in caller may call it. `locations:read` came after the first connections. A token without it still sees `list_locations`. A call then answers 403 `insufficient_scope`, and the client asks the user for that scope.
+A tool with scope "none" serves public reference data, so every signed-in caller may call it. `locations:read` and `alerts:write` came after the first connections. A token without `locations:read` still sees `list_locations`; a call then answers 403 `insufficient_scope`, and the client asks the user for that scope. Not every client runs the step-up. So a token without `alerts:write` gets a tool result with a link to joulo.nl/laadkaart instead of a 403. There one tap turns the alert on.
 
 ### Resources
 
-One tool renders a widget: `get_price_curve` names it in its `_meta`. The server lists the same HTML twice, once per host convention:
+Two tools render a widget, and each names it in its `_meta`. The server lists each HTML twice, once per host convention:
 
 | URI | MIME type | Host |
 |---|---|---|
 | `ui://joulo/price-curve.html` | `text/html;profile=mcp-app` | MCP Apps |
 | `ui://joulo/price-curve.skybridge.html` | `text/html+skybridge` | ChatGPT (OpenAI Apps SDK) |
+| `ui://joulo/charger-map.html` | `text/html;profile=mcp-app` | MCP Apps |
+| `ui://joulo/charger-map.skybridge.html` | `text/html+skybridge` | ChatGPT (OpenAI Apps SDK) |
 
-The widget makes no network requests: its CSP allows no domains, and the data arrives with the tool result. A client without UI support shows the text result, which is complete on its own. The server has no resource templates.
+The price curve makes no network requests: its CSP allows no domains, and the data arrives with the tool result. The charger map loads its map library from `https://unpkg.com` and its tiles from `https://service.pdok.nl`, the map service of the Dutch government. Its CSP allows only those two. The charger data arrives with the tool result. A client without UI support shows the text result, which is complete on its own. The server has no resource templates.
 
 ### Source
 
@@ -201,7 +230,7 @@ Anthropic asks for a plugin that points at an MCP server to submit that server a
 
 ## Demo
 
-[`docs/demo.mp4`](docs/demo.mp4) is a two-minute run in Codex (1072 × 1440, re-encoded from the screen recording), recorded on 11 October 2026 with a demo account. It shows the fee and price question, recent sessions, MID and all-station totals, the 2026 position per quarter, and three refused requests: stop charging, delete history, sell credits. GitHub Pages serves it as a playable video at https://joulo-nl.github.io/joulo-mcp-plugin/docs/demo.mp4, and the OpenAI manifest links that URL as `review.demo_recording_url`. GitHub's own file view does not play video. The video is not part of the OpenAI ZIP.
+[`docs/demo.mp4`](docs/demo.mp4) is a two-minute run in Codex (1072 × 1440, re-encoded from the screen recording). We recorded it on 11 October 2026 with a demo account. It shows the fee and price question, recent sessions, MID and all-station totals, and the 2026 position per quarter. It also shows three refused requests: stop charging, delete history, sell credits. It predates version 0.2.0, so it shows none of the public charging tools. GitHub Pages serves it as a playable video at https://joulo-nl.github.io/joulo-mcp-plugin/docs/demo.mp4. The OpenAI manifest links that URL as `review.demo_recording_url`. GitHub's own file view does not play video. The video is not part of the OpenAI ZIP.
 
 ## Testing status
 
@@ -214,6 +243,7 @@ Anthropic asks for a plugin that points at an MCP server to submit that server a
 | Claude Code loads the plugin and reaches the server | Passed: `claude mcp list` shows `plugin:joulo:joulo` as "Needs authentication" |
 | Unauthenticated `POST /mcp` returns 401 with `WWW-Authenticate` and resource metadata | Passed |
 | OAuth sign-in and tool calls from Claude Code | **Not tested**: needs an interactive sign-in |
+| Version 0.2.0 test cases (price curve, charger map, alert, costs per kilometre) against the submission | **Not tested**: needs a signed-in demo account |
 | Tool calls from Codex | **Not tested here**: [`docs/demo.mp4`](docs/demo.mp4) shows a development run |
 | Upload of the generated ZIP to the OpenAI portal | **Not tested**: OpenAI publishes no offline validator |
 | Install from the private GitHub repository | Passed: `marketplace add` and `install joulo@joulo` in a clean Claude Code config, then "Needs authentication" |

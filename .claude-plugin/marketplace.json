@@ -3,12 +3,12 @@
   "owner": {
     "name": "Joulo B.V."
   },
-  "description": "Joulo's plugin for Claude Code: read-only access to your Joulo EV charging data through the Joulo MCP server.",
+  "description": "Joulo's plugin for Claude Code: your Joulo EV charging data and public charging in the Netherlands, through the Joulo MCP server.",
   "plugins": [
     {
       "name": "joulo",
       "source": "./plugins/joulo",
-      "description": "Read your home EV charging sessions, energy totals, electricity prices and ERE earnings from Joulo."
+      "description": "Read your home EV charging sessions, ERE earnings and electricity prices from Joulo, and find public chargers in the Netherlands."
     }
   ]
 }
