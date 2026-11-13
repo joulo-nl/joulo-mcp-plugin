@@ -1,8 +1,8 @@
 {
   "name": "joulo",
   "displayName": "Joulo",
-  "version": "0.1.2",
-  "description": "Read your home EV charging sessions, energy totals, electricity prices and ERE earnings from Joulo.",
+  "version": "0.2.0",
+  "description": "Read your home EV charging sessions, ERE earnings and electricity prices from Joulo, and find public chargers in the Netherlands.",
   "author": {
     "name": "Joulo B.V."
   },
@@ -12,6 +12,9 @@
     "electric-vehicle",
     "home-charging",
     "charging-sessions",
+    "public-charging",
+    "charger-map",
+    "route-planning",
     "energy",
     "electricity-prices",
     "ere",

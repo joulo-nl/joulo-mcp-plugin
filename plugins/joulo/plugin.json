@@ -1,8 +1,8 @@
 {
   "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
   "name": "joulo",
-  "version": "0.1.2",
-  "description": "Read your home EV charging sessions, energy totals, electricity prices and ERE earnings from Joulo.",
+  "version": "0.2.0",
+  "description": "Read your home EV charging sessions, ERE earnings and electricity prices from Joulo, and find public chargers in the Netherlands.",
   "author": {
     "name": "Joulo B.V."
   },
@@ -11,13 +11,13 @@
     "com.openai": {
       "interface": {
         "displayName": "Joulo",
-        "shortDescription": "EV charging and carbon credits",
-        "longDescription": "Connect your Joulo account to view your EV chargers, charging sessions, energy totals and ERE carbon credit earnings. Check charger status and MID eligibility, explore sessions by date or charger, compare totals for MID stations and all stations, and see annual and quarterly amounts expected, reserved, sold, payable and paid. Session euro values and indicative ERE prices are estimates. The plugin is read-only: it cannot control chargers, change your account, delete data, sell credits or initiate payments. A Joulo account and OAuth connection are required.",
+        "shortDescription": "Home and public EV charging",
+        "longDescription": "Connect your Joulo account to see your EV charging at home and find public charging in the Netherlands. See your charging stations and whether they count for ERE (Emissiereductie-eenheden), your sessions, energy totals and charts over time. See per year and quarter what is expected, reserved, traded, payable and paid. Check the electricity price per hour, the cheapest time to charge, what charging cost you and what a kilometre costs. Find public chargers near a place or along a route, with the price of a session and how many are free, on a map. Ask for a mail when a laadpunt at a full location comes free, and stop it again. That alert is the only thing the plugin can change. It cannot start or stop charging, change your account, delete data, sell ERE's or start a payment. Euro values for sessions and the indicative ERE price are estimates, not guaranteed payouts. A Joulo account and an OAuth connection are required.",
         "developerName": "Joulo B.V.",
         "defaultPrompt": [
-          "Show my chargers and their MID eligibility.",
-          "How much energy did I charge yesterday?",
-          "Show my carbon credit position for this year."
+          "Which of my charging stations count for ERE, and is one charging now?",
+          "When is electricity cheapest tonight to charge my car?",
+          "Where can I fast-charge on the way from Utrecht to Groningen?"
         ],
         "websiteURL": "https://joulo.nl/",
         "supportURL": "https://joulo.nl/support",
@@ -31,57 +31,57 @@
         "test_cases": {
           "positive": [
             {
-              "description": "Account profile and pricing. Setup: authenticated dedicated demo account with known account name, effective fee and indicative ERE price. Compare output against the API response.",
-              "prompt": "What account am I connected to, and what fee and indicative ERE price apply to my estimates?",
-              "tools_triggered": "get_account",
-              "expected_behavior": "Call get_account with no inputs. Show the returned account name, effective fee percentage and indicative price per ERE with its returned currency/unit. Identify the price as indicative, not guaranteed proceeds. Do not expose the returned email unless necessary to answer the request."
-            },
-            {
-              "description": "Charger inventory and live state. Setup: authenticated dedicated sample account containing one charger. Compare all returned inventory/status/MID fields with the actual API response. A running session is optional; assert only the returned state.",
-              "prompt": "Show my chargers, their status, and which are MID eligible. Is any charger currently charging?",
+              "description": "Charger inventory and live state. Setup: authenticated dedicated sample account containing one charger. Compare all returned inventory, status and MID fields with the actual API response. A running session is optional; assert only the returned state.",
+              "prompt": "Show my charging stations, their status, and which ones count for ERE. Is any of them charging now?",
               "tools_triggered": "list_chargers",
-              "expected_behavior": "Call list_chargers with no inputs. List returned charger nicknames/ids, status and MID eligibility. Describe a running session only when present in the response. Do not claim non-MID chargers qualify for ERE credits."
+              "expected_behavior": "Call list_chargers with no inputs. List the returned station nicknames or ids, status and MID eligibility. Describe a running session only when the response holds one. Do not claim that a station without MID eligibility counts for ERE."
             },
             {
-              "description": "Recent charging sessions and explicit page size. Setup: dedicated authenticated demo account with at least two sessions. Compare output to the actual API response. The recorded development walkthrough shows this prompt; exact tool arguments and submission-version execution remain to be verified.",
-              "prompt": "Show my two most recent charging sessions, including kWh, ERE and estimated value.",
-              "tools_triggered": "list_charging_sessions",
-              "expected_behavior": "Call list_charging_sessions with limit=2 and offset=0 (or its verified default), with no unnecessary date or charger filters. Preserve newest-first ordering. Report at most two returned sessions and their returned kWh, ERE and estimated euro value. Label estimates as forecasts, not payouts. Preserve returned gross/net semantics; do not label the indicative gross ERE price as net of the account fee. Present returned timestamps in Europe/Amsterdam with clear timezone context."
-            },
-            {
-              "description": "MID-only versus all-station totals. Setup: dedicated sample account with one charger and approximately 150 sessions. Returned totals are the oracle. Totals may be equal when all returned sessions are MID eligible; do not fabricate non-MID usage.",
-              "prompt": "Compare my lifetime and monthly charging totals for MID-eligible stations with all my stations. Include energy, ERE and session counts.",
-              "tools_triggered": "get_energy_totals",
-              "expected_behavior": "Call get_energy_totals with no inputs. Label headline fields as MID-station totals and corresponding *_all fields as all-station totals. Report returned lifetime and monthly kWh, ERE and counts where available. Do not imply all-station ERE values establish eligibility or payout entitlement."
-            },
-            {
-              "description": "Annual position and quarter breakdown. Setup: dedicated sample account containing a 2026 ERE position. Compare each returned category and quarter to the actual response. Zero or unavailable values are valid; do not fabricate nonzero amounts.",
-              "prompt": "For 2026, how much is expected, reserved, sold, payable and already paid from my carbon credits? Break it down by quarter.",
+              "description": "Annual position and quarter breakdown. Setup: dedicated sample account containing a 2026 ERE position. Compare each returned category and quarter with the actual response. Zero or unavailable values are valid; do not fabricate nonzero amounts.",
+              "prompt": "For 2026, how much of my ERE is expected, reserved, traded, payable and already paid? Break it down by quarter.",
               "tools_triggered": "get_ere_position",
-              "expected_behavior": "Call get_ere_position with year=2026. Report each returned expected, reserved, sold, payable and paid position and its quarterly breakdown with returned units/currency. Keep the categories distinct and do not sum overlapping stages into a claimed total. Do not describe expected or reserved amounts as paid."
+              "expected_behavior": "Call get_ere_position with year=2026. Report each returned expected, reserved, traded, payable and paid position and its quarterly breakdown with the returned units and currency. Keep the categories apart and do not add overlapping stages into one total. Do not describe expected or reserved amounts as paid."
+            },
+            {
+              "description": "Price curve with the widget. Setup: dedicated demo account. Prices for today exist after the daily publication; the returned slots are the oracle. A host with MCP Apps or Apps SDK support shows the price curve widget.",
+              "prompt": "Show today's electricity price per hour and tell me the cheapest time to charge.",
+              "tools_triggered": "get_price_curve",
+              "expected_behavior": "Call get_price_curve for today. Show the returned prices in euro per kWh incl. VAT and name the cheapest slot from summary. Read contract.type: on a fixed contract say that the hour does not change what the user pays; on unknown, ask. Never invent prices for slots that are not in the response."
+            },
+            {
+              "description": "Public chargers near a place, with an optional mail alert. Setup: any authenticated account. The returned locations are the oracle; free counts change every minute. A host with widget support shows the charger map.",
+              "prompt": "Where can I charge near Utrecht Centraal, and what does a session cost there? If the nearest one is full, mail me when a laadpunt comes free.",
+              "tools_triggered": "find_public_chargers, watch_public_charger",
+              "expected_behavior": "Call find_public_chargers with place set to Utrecht Centraal. Report the nearest returned locations with operator, distance, free laadpunten and reference_price. When a price has status unknown, say it is unknown, never that charging is free. Only when the nearest location has no free laadpunt, confirm with the user and then call watch_public_charger with its party_id and location_id. Report expires_at and that the mail goes to the address of the Joulo account. Never promise that a laadpunt will be free on arrival."
+            },
+            {
+              "description": "Charging costs and cost per kilometre. Setup: dedicated demo account with sessions in the previous calendar month. The returned totals are the oracle; priced_share below 1 makes the costs a lower bound.",
+              "prompt": "What did charging at home cost me last month, and what does a kilometre cost me?",
+              "tools_triggered": "get_charging_costs",
+              "expected_behavior": "Call get_charging_costs for the previous calendar month. Quote the returned totals and the per_km figure; do not add up sessions or compute a price per kilometre yourself. Say that the consumption behind per_km is an assumption and that public charging is not included. When priced_share is below 1, say the costs are a lower bound."
             }
           ],
           "negative": [
             {
-              "description": "Unsupported charger control. Explain that Joulo's plugin only reads data and cannot start or stop charging. Do not invoke any tool to perform control or claim the charger was stopped.",
+              "description": "Unsupported charger control. Explain that the plugin reads data and can set mail alerts for public chargers, but cannot start or stop charging. Do not invoke any tool to perform control or claim the charger was stopped.",
               "prompt": "Stop charging on all my chargers now."
             },
             {
-              "description": "Unsupported deletion. Explain that the plugin cannot delete charging sessions or account data; direct the user to Joulo support/account channels without claiming deletion. Do not invoke any tool as a deletion action.",
+              "description": "Unsupported deletion. Explain that the plugin cannot delete charging sessions or account data; direct the user to Joulo support or account channels without claiming deletion. Do not invoke any tool as a deletion action.",
               "prompt": "Delete my entire charging history from Joulo."
             },
             {
-              "description": "Unsupported credit sale and payout. Explain that the plugin can display a credit position but cannot sell credits or initiate a bank payment. Do not invoke a read tool as fulfillment or claim a transaction occurred.",
-              "prompt": "Sell all my carbon credits and pay the proceeds into my bank account now."
+              "description": "Unsupported ERE sale and payout. Explain that the plugin can show an ERE position but cannot sell ERE's or start a bank payment. Do not invoke a read tool as fulfillment or claim a transaction occurred.",
+              "prompt": "Sell all my ERE's and pay the proceeds into my bank account now."
             }
           ]
         },
         "commerce": false,
-        "commerce_description": "Read-only display of personal EV charging data and carbon credit earnings. No purchases, credit sales, payment initiation or checkout flow are supported.",
+        "commerce_description": "Display of personal EV charging data, ERE earnings and public charging prices, plus mail alerts for a free public laadpunt. No purchases, ERE sales, payment initiation or checkout flow are supported.",
         "demo_recording_url": "https://joulo-nl.github.io/joulo-mcp-plugin/docs/demo.mp4"
       },
       "publication": {
-        "release_notes": "Clearer short description, plus listing text and keywords for the Claude directory.",
+        "release_notes": "Covers the server's new tools. Public charging: chargers on a map, the price of a session, fast chargers along a route and a mail when a laadpunt comes free. Also electricity price history and forecast, solar and weather data, grid operator costs, charts, the cost per kilometre and the Joulo blog. The descriptions now say that alerts are the one thing the plugin can change.",
         "countries": [
           "AD",
           "AL",
